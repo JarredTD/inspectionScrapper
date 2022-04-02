@@ -1,3 +1,4 @@
+from multiprocessing import connection
 import requests
 import time
 
@@ -28,19 +29,16 @@ for url in listOfUrls:
 
 counter = 0
 for url in listOfUrlsClean:
+    if len(url) < 84:
+        continue
     datasetList = []
     listOfCodesHere = []
-
     try:
         webpage = requests.get(url)
     except:
-        time.sleep(5)
-        try:
-            webpage = requests.get(url)
-        except: 
-            time.sleep(10)
-            webpage = requests.get(url)
-            print("Fucked")
+        print("Too Long")
+        time.sleep(15)
+        webpage = requests.get(url)
 
     codes = webpage.text.splitlines()[64::5]
     for code in codes:
@@ -58,13 +56,13 @@ for url in listOfUrlsClean:
 
     datasetList.append(listOfNamesClean[counter])
     datasetList.append(listOfScoresClean[counter])
-    datasetList.append(",".join(listOfCleanCodesInner))
+    datasetList.append(", ".join(listOfCleanCodesInner))
     listOfDataset.append(datasetList)
     counter+=1
 
 outputFile = open("data.txt","w")
 for dataset in listOfDataset:
-    outputFile.write(",".join(dataset))
+    outputFile.write("|".join(dataset))
     outputFile.write("\n")
 
     
